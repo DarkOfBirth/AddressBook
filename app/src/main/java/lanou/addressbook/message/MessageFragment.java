@@ -144,6 +144,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
                 } else {
 
                     manager.sendTextMessage(number.getText().toString(), null, body.getText().toString(), null, null);
+
 //                    try {
 //
 //
@@ -160,18 +161,24 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
                     for (int i = 0; i < messagebeans.size() ; i++) {
                             Log.d("MessageFragment", messagebeans.get(i).getPhonenumber());
                             String phonenumber = number.getText().toString();
+                        String name = tools.isMatch(phonenumber);
+                        String content = body.getText().toString();
+                        int type = 2;
+                        long time = System.currentTimeMillis();
+                        MessageBean message = new MessageBean(name, content, time + "", phonenumber, type);
                         if(phonenumber.equals(messagebeans.get(i).getPhonenumber())){
                             Log.d("MessageFragment", "查到");
-                            String name = tools.isMatch(phonenumber);
-                            String content = body.getText().toString();
-                            int type = 2;
-                            MessageBean message = new MessageBean(name,content,messagebeans.get(i).getDate(),phonenumber,type);
-                            messagebeans.set(i,message);
+                            messagebeans.add(0, message);
+                            messagebeans.remove(i + 1);
                             messageAdapter.setArraylist(messagebeans);
+                            break;
                         } else{
-                            Log.d("MessageFragment", "未查到");
+                            messagebeans.add(0, message);
+                            messagebeans.add(0, message);
+                            // 执行
                         }
                     }
+                    Log.d("MessageFragment", "跳出循环");
 
                 }
             }
@@ -182,6 +189,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
     @Override
     public void onPause() {
         super.onPause();
+        Log.d("MessageFragment", "进入后台");
         SingleSimpleThreadPool.getInstance().getThreadPool().execute(new Message_Data(context));
     }
 

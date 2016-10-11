@@ -2,6 +2,7 @@ package lanou.addressbook.ChatMessage;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,8 +14,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import lanou.addressbook.Data.Message_Data;
 import lanou.addressbook.DataBase.DBTools;
 import lanou.addressbook.R;
+import lanou.addressbook.guide.SingleSimpleThreadPool;
 import lanou.addressbook.message.MessageBean;
 
 /**
@@ -33,6 +36,7 @@ public class Chat extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_activity);
+        SingleSimpleThreadPool.getInstance().getThreadPool().execute(new Message_Data(this));
         rv_chat = (RecyclerView) findViewById(R.id.rv_chat);
         name = (TextView) findViewById(R.id.name);
         btn_send = (Button) findViewById(R.id.btn_send);
@@ -70,5 +74,42 @@ public class Chat extends Activity {
         Log.d("Chat","number" + phonenumber);
         return tools.query_message_bynumber(phonenumber);
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences sp = getSharedPreferences("TemporyMessage", MODE_PRIVATE);
+        SharedPreferences.Editor et = sp.edit();
+        if (et_body.getText().toString() != "请输入内容") {
+            Log.d("Chat", "进入");
+            et.putString(messageBean.getPhonenumber(), et_body.getText().toString());
+        } else {
+            et.putString(messageBean.getPhonenumber(), "请输入内容");
+
+        }
+
+        et.commit();
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sp = getSharedPreferences("TemporyMessage", MODE_PRIVATE);
+        String str = sp.getString(messageBean.getPhonenumber(), "");
+        if (str == "请输入内容") {
+            et_body.setHint(str);
+        } else {
+
+            et_body.setText(sp.getString(messageBean.getPhonenumber(), ""));
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        this.finish();
     }
 }
