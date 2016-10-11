@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+              android:layout_height="40dp"
+              android:background="#FF0000"
+              android:layout_width="match_parent">
+        <TextView
+            android:layout_marginTop="7dp"
+           android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="短 信"
+            android:textSize="25sp"
+            />
+      <Button
+          android:id="@+id/add"
+          android:layout_width="40dp"
+          android:layout_height="30dp"
+          android:background="@null"
+          android:layout_margin="3dp"
+          android:layout_alignParentRight="true"
+          android:layout_centerVertical="true"
+          android:textSize="25sp"
+         android:text="+"
+          />
+</RelativeLayout>
