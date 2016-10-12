@@ -21,13 +21,13 @@ public class ChatAdapter extends RecyclerView.Adapter {
     ArrayList<MessageBean> messageBeen;
     Context context;
 
-    public void setMessageBeen(ArrayList<MessageBean> messageBeen) {
-        this.messageBeen = messageBeen;
-    }
-
     public ChatAdapter(Context context) {
 
         this.context = context;
+    }
+
+    public void setMessageBeen(ArrayList<MessageBean> messageBeen) {
+        this.messageBeen = messageBeen;
     }
 
     @Override
@@ -86,11 +86,14 @@ public class ChatAdapter extends RecyclerView.Adapter {
      */
     public void sendMessage(String message_body) {
         SmsManager manager= SmsManager.getDefault();
+
         if(message_body != null) {
             Log.d("ChatAdapter", messageBeen.get(0).getPhonenumber());
+            Log.d("ChatAdapter", message_body);
         manager.sendTextMessage(messageBeen.get(0).getPhonenumber(),null,message_body,null,null);
             messageBeen.add(new MessageBean(null,message_body,null,null,2));
             notifyDataSetChanged();
+
 
         }
 

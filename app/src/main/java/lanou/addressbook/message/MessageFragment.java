@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.PopupWindow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import lanou.addressbook.ChatMessage.Chat;
 import lanou.addressbook.Data.Message_Data;
@@ -32,6 +33,7 @@ import lanou.addressbook.guide.SingleSimpleThreadPool;
 
 public class MessageFragment extends Fragment implements OnRecyclerItemClick_Message, View.OnClickListener {
 
+    private static HashMap<String, String> maps;
     private ArrayList<MessageBean> messagebeans;
     private DBTools tools;
     private SQLiteDatabase db;
@@ -55,6 +57,22 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
 
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+        messagebeans = new ArrayList<>();
+        tools = new DBTools(context);
+        rv_message = (RecyclerView) view.findViewById(R.id.rv_message);
+        messageAdapter = new MessageAdapter(context);
+        init();
+        View view_title = view.findViewById(R.id.title_message);
+
+        view_title.setOnClickListener(this);
+        add = (Button) view_title.findViewById(R.id.add);
+        add.setOnClickListener(this);
+
+        super.onViewCreated(view, savedInstanceState);
+    }
     /**
      * popWindow的初始化
      */
@@ -84,25 +102,14 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
 
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
-        messagebeans = new ArrayList<>();
-        tools = new DBTools(getActivity());
-        rv_message = (RecyclerView) view.findViewById(R.id.rv_message);
-        messageAdapter = new MessageAdapter(getActivity());
-        init();
-        View view_title = view.findViewById(R.id.title_message);
-
-        view_title.setOnClickListener(this);
-        add = (Button) view_title.findViewById(R.id.add);
-        add.setOnClickListener(this);
-
-        super.onViewCreated(view, savedInstanceState);
-    }
 
     private void init() {
         messagebeans = initData();
+        // 用来存放电话号码 与 对应的人名,减少数据库的查询
+        maps = new HashMap<>();
+        for (int i = 0; i < messagebeans.size(); i++) {
+            maps.put(messagebeans.get(i).getPhonenumber(), messagebeans.get(i).getName());
+        }
         messageAdapter.setArraylist(messagebeans);
         messageAdapter.setOnRecyclerItemClick_message(this);
         rv_message.setAdapter(messageAdapter);
@@ -144,7 +151,12 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
                 } else {
 
                     manager.sendTextMessage(number.getText().toString(), null, body.getText().toString(), null, null);
-
+                    String phonenumber = number.getText().toString();
+                    String name = maps.get(phonenumber);
+                    String content = body.getText().toString();
+                    int type = 2;
+                    long time = System.currentTimeMillis();
+                    MessageBean message = new MessageBean(name, content, time + "", phonenumber, type);
 //                    try {
 //
 //
@@ -160,12 +172,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
                     Log.d("MessageFragment","电话" + number.getText().toString());
                     for (int i = 0; i < messagebeans.size() ; i++) {
                             Log.d("MessageFragment", messagebeans.get(i).getPhonenumber());
-                            String phonenumber = number.getText().toString();
-                        String name = tools.isMatch(phonenumber);
-                        String content = body.getText().toString();
-                        int type = 2;
-                        long time = System.currentTimeMillis();
-                        MessageBean message = new MessageBean(name, content, time + "", phonenumber, type);
+
                         if(phonenumber.equals(messagebeans.get(i).getPhonenumber())){
                             Log.d("MessageFragment", "查到");
                             messagebeans.add(0, message);
