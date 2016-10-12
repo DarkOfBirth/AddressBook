@@ -1,6 +1,7 @@
 package lanou.addressbook.ChatMessage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
 import android.util.Log;
@@ -90,10 +91,17 @@ public class ChatAdapter extends RecyclerView.Adapter {
         if(message_body != null) {
             Log.d("ChatAdapter", messageBeen.get(0).getPhonenumber());
             Log.d("ChatAdapter", message_body);
-        manager.sendTextMessage(messageBeen.get(0).getPhonenumber(),null,message_body,null,null);
-            messageBeen.add(new MessageBean(null,message_body,null,null,2));
-            notifyDataSetChanged();
+            String phonenumber_message = messageBeen.get(0).getPhonenumber();
+            manager.sendTextMessage(phonenumber_message, null, message_body, null, null);
 
+            MessageBean bean = new MessageBean(messageBeen.get(0).getName(), message_body, System.currentTimeMillis() + "", phonenumber_message, 2);
+            messageBeen.add(bean);
+            notifyDataSetChanged();
+            Intent intent = new Intent("lanou.addressbook.ChatMessage.message");
+
+            intent.putExtra("messagedata", bean);
+
+            context.sendBroadcast(intent);
 
         }
 

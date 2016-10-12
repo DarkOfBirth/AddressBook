@@ -63,7 +63,9 @@ public class Chat extends Activity {
             public void onClick(View v) {
                 String message_body = et_body.getText().toString();
             adapter.sendMessage(message_body);
-
+                Log.d("Chat", "为什么不清空");
+                et_body.setText("");
+                et_body.setHint("请输入内容");
             }
         });
 

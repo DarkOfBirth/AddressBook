@@ -1,9 +1,11 @@
 package lanou.addressbook.message;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,6 +45,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
     private Button send_pop;
     private RecyclerView rv_message;
     private MessageAdapter messageAdapter;
+    private MessageCustomBroadCast cast;
 
     @Override
     public void onAttach(Context context) {
@@ -53,6 +56,12 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+
+        // 广播的注册........
+        cast = new MessageCustomBroadCast();
+        IntentFilter filter = new IntentFilter("lanou.addressbook.ChatMessage.message");
+        context.registerReceiver(cast, filter);
         return inflater.inflate(R.layout.message_fragment, null);
 
     }
@@ -157,6 +166,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
                     int type = 2;
                     long time = System.currentTimeMillis();
                     MessageBean message = new MessageBean(name, content, time + "", phonenumber, type);
+                    refreshListView(message);
 //                    try {
 //
 //
@@ -169,23 +179,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
 //                        e.printStackTrace();
 //                    }
 //                    init();
-                    Log.d("MessageFragment","电话" + number.getText().toString());
-                    for (int i = 0; i < messagebeans.size() ; i++) {
-                            Log.d("MessageFragment", messagebeans.get(i).getPhonenumber());
 
-                        if(phonenumber.equals(messagebeans.get(i).getPhonenumber())){
-                            Log.d("MessageFragment", "查到");
-                            messagebeans.add(0, message);
-                            messagebeans.remove(i + 1);
-                            messageAdapter.setArraylist(messagebeans);
-                            break;
-                        } else{
-                            messagebeans.add(0, message);
-                            messagebeans.add(0, message);
-                            // 执行
-                        }
-                    }
-                    Log.d("MessageFragment", "跳出循环");
 
                 }
             }
@@ -204,7 +198,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
     public void onResume() {
         super.onResume();
 
-        init();
+        //init();
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -251,6 +245,24 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
         startActivity(intent);
     }
 
+    private void refreshListView(MessageBean message) {
+
+        for (int i = 0; i < messagebeans.size(); i++) {
+            Log.d("MessageFragment", messagebeans.get(i).getPhonenumber());
+
+            if (message.getPhonenumber().equals(messagebeans.get(i).getPhonenumber())) {
+                Log.d("MessageFragment", "查到");
+                messagebeans.add(0, message);
+                messagebeans.remove(i + 1);
+                messageAdapter.setArraylist(messagebeans);
+                return;
+            }
+        }
+
+        messagebeans.add(0, message);
+        messageAdapter.setArraylist(messagebeans);
+        Log.d("MessageFragment", "跳出循环");
+    }
     public void dissMissPop() {
         if (popupWindow != null) {
 
@@ -274,6 +286,29 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
                     initPop();
                 }
                 break;
+
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        context.unregisterReceiver(cast);
+    }
+
+    class MessageCustomBroadCast extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // 参数intent, 就是无序广播携带值的 intent
+            MessageBean bean = (MessageBean) intent.getSerializableExtra("messagedata");
+            Log.d("MessageCustomBroadCast", "bean:" + bean);
+            Log.d("MessageCustomBroadCast", bean.getPhonenumber());
+            bean.setName(maps.get(bean.getPhonenumber()));
+            Log.d("MessageCustomBroadCast", bean.getName());
+            Log.d("MessageCustomBroadCast", bean.getContent());
+            refreshListView(bean);
+
 
         }
     }
