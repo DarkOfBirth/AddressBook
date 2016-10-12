@@ -206,6 +206,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
         Log.d("MessageFragment", "初始化数据");
         // 这个可以
         ArrayList<MessageBean> beans;
+        //hello
 //        Cursor cursor = getActivity().getContentResolver().query(Telephony.Sms.CONTENT_URI, null, null, null, null, null);
 //        Log.d("MessageFragment", "cursor.getCount():" + cursor.getCount());
 //        if (cursor != null) {
