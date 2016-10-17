@@ -190,7 +190,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("MessageFragment", "进入后台");
+        // Log.d("MessageFragment", "进入后台");
         SingleSimpleThreadPool.getInstance().getThreadPool().execute(new Message_Data(context));
     }
 
@@ -203,7 +203,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private ArrayList<MessageBean> initData() {
-        Log.d("MessageFragment", "初始化数据");
+        //  Log.d("MessageFragment", "初始化数据");
         // 这个可以
         ArrayList<MessageBean> beans;
         //hello
@@ -242,7 +242,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
     @Override
     public void onItemClick(MessageBean chatbean) {
         Intent intent = new Intent(getActivity(), Chat.class);
-        Log.d("MessageFragment1", "chatbean:" + chatbean.getPhonenumber());
+        // Log.d("MessageFragment1", "chatbean:" + chatbean.getPhonenumber());
         intent.putExtra("data", chatbean);
         startActivity(intent);
     }
@@ -250,10 +250,10 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
     private void refreshListView(MessageBean message) {
 
         for (int i = 0; i < messagebeans.size(); i++) {
-            Log.d("MessageFragment", messagebeans.get(i).getPhonenumber());
+            // Log.d("MessageFragment", messagebeans.get(i).getPhonenumber());
 
             if (message.getPhonenumber().equals(messagebeans.get(i).getPhonenumber())) {
-                Log.d("MessageFragment", "查到");
+                // Log.d("MessageFragment", "查到");
                 messagebeans.add(0, message);
                 messagebeans.remove(i + 1);
                 messageAdapter.setArraylist(messagebeans);
@@ -263,7 +263,7 @@ public class MessageFragment extends Fragment implements OnRecyclerItemClick_Mes
 
         messagebeans.add(0, message);
         messageAdapter.setArraylist(messagebeans);
-        Log.d("MessageFragment", "跳出循环");
+        // Log.d("MessageFragment", "跳出循环");
     }
     public void dissMissPop() {
         if (popupWindow != null) {
